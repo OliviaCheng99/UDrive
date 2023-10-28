@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.capstone.udrive.mappers.FileShareMapper">
+
+    <!-- Entity Mapping -->
+    <resultMap id="base_result_map" type="com.capstone.udrive.entity.po.FileShare">
+        <!-- Share ID -->
+        <result column="share_id" property="shareId"/>
+        <!-- File ID -->
+        <result column="file_id" property="fileId"/>
+        <!-- User ID -->
+        <result column="user_id" property="userId"/>
+        <!-- Validity Type: 0 for 1 day, 1 for 7 days, 2 for 30 days, 3 for permanent -->
+        <result column="valid_type" property="validType"/>
+        <!-- Expiration Time -->
+        <result column="expire_time" property="expireTime"/>
+        <!-- Share Time -->
+        <result column="share_time" property="shareTime"/>
+        <!-- Extraction Code -->
+        <result column="code" property="code"/>
+        <!-- View Count -->
+        <result column="show_count" property="showCount"/>
+        <!-- File Name -->
+        <result column="file_name" property="fileName"/>
+        <!-- File Cover -->
+        <result column="file_cover" property="fileCover"/>
+        <!-- Folder Type: 0 for file, 1 for directory -->
+        <result column="folder_type" property="folderType"/>
+        <!-- File Category: 1 for video, 2 for audio, 3 for image, 4 for document, 5 for other -->
+        <result column="file_category" property="fileCategory"/>
+        <!-- File Type: 1 for video, 2 for audio, 3 for image, 4 for PDF, 5 for DOC, 6 for Excel, 7 for TXT, 8 for code, 9 for ZIP, 10 for other -->
+        <result column="file_type" property="fileType"/>
+    </resultMap>
+
+    <!-- Common Query Result Columns -->
+    <sql id="base_column_list">
+        share_id, file_id, user_id, valid_type, expire_time, share_time, code, show_count
+    </sql>
+
+    <sql id="base_condition_filed">
+        <if test="query.shareId != null and query.shareId!=''">
+            and share_id = #{query.shareId}
+        </if>
+        <if test="query.fileId != null and query.fileId!=''">
+            and file_id = #{query.fileId}
+        </if>
+        <if test="query.userId != null and query.userId!=''">
+            and user_id = #{query.userId}
+        </if>
+        <if test="query.validType != null">
+            and valid_type = #{query.validType}
+        </if>
+        <if test="query.expireTime != null and query.expireTime!=''">
+            <![CDATA[ and  expire_time=str_to_date(#{query.expireTime}, '%Y-%m-%d') ]]>
+        </if>
+        <if test="query.shareTime != null and query.shareTime!=''">
+            <![CDATA[ and  share_time=str_to_date(#{query.shareTime}, '%Y-%m-%d') ]]>
+        </if>
+        <if test="query.code != null and query.code!=''">
+            and code = #{query.code}
+        </if>
+        <if test="query.showCount != null">
+            and show_count = #{query.showCount}
+        </if>
+    </sql>
+
+    <!-- Common Condition Columns -->
+    <sql id="base_condition">
+        <where>
+            <include refid="base_condition_filed"/>
+        </where>
+    </sql>
+
+    <!-- Common Query Condition Columns -->
+    <sql id="query_condition">
+        <where>
+            <include refid="base_condition_filed"/>
+            <if test="query.shareIdFuzzy!= null  and query.shareIdFuzzy!=''">
+                and share_id like concat('%', #{query.shareIdFuzzy}, '%')
+            </if>
+            <if test="query.fileIdFuzzy!= null  and query.fileIdFuzzy!=''">
+                and file_id like concat('%', #{query.fileIdFuzzy}, '%')
+            </if>
+            <if test="query.userIdFuzzy!= null  and query.userIdFuzzy!=''">
+                and user_id like concat('%', #{query.userIdFuzzy}, '%')
+            </if>
+            <if test="query.expireTimeStart!= null and query.expireTimeStart!=''">
+                <![CDATA[ and  expire_time>=str_to_date(#{query.expireTimeStart}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="query.expireTimeEnd!= null and query.expireTimeEnd!=''">
+                <![CDATA[ and  expire_time< date_sub(str_to_date(#{query.expireTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+            </if>
+            <if test="query.shareTimeStart!= null and query.shareTimeStart!=''">
+                <![CDATA[ and  share_time>=str_to_date(#{query.shareTimeStart}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="query.shareTimeEnd!= null and query.shareTimeEnd!=''">
+                <![CDATA[ and  share_time< date_sub(str_to_date(#{query.shareTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+            </if>
+            <if test="query.codeFuzzy!= null  and query.codeFuzzy!=''">
+                and code like concat('%', #{query.codeFuzzy}, '%')
+            </if>
+        </where>
+    </sql>
+
+    <!-- Select List -->
+    <select id="selectList" resultMap="base_result_map">
+        SELECT
+        <include refid="base_column_list"/>
+        FROM file_share
+        <include refid="query_condition"/>
+        <if test="query.orderBy!=null">
+            order by ${query.orderBy}
+        </if>
+        <if test="query.simplePage!=null">
+            limit #{query.simplePage.start},#{query.simplePage.end}
+        </if>
+    </select>
+
+    <!-- Select Count -->
+    <select id="selectCount" resultType="java.lang.Integer">
+        SELECT count(1) FROM file_share
+        <include refid="query_condition"/>
+    </select>
+
+    <!-- Insert (Matching Non-Null Fields) -->
+    <insert id="insert" parameterType="com.capstone.udrive.entity.po.FileShare">
+        INSERT INTO file_share
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bean.shareId != null">share_id,</if>
+            <if test="bean.fileId != null">file_id,</if>
+            <if test="bean.userId != null">user_id,</if>
+            <if test="bean.validType != null">valid_type,</if>
+            <if test="bean.expireTime != null">expire_time,</if>
+            <if test="bean.shareTime != null">share_time,</if>
+            <if test="bean.code != null">code,</if>
+            <if test="bean.showCount != null">show_count,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bean.shareId!=null">#{bean.shareId},</if>
+            <if test="bean.fileId!=null">#{bean.fileId},</if>
+            <if test="bean.userId!=null">#{bean.userId},</if>
+            <if test="bean.validType!=null">#{bean.validType},</if>
+            <if test="bean.expireTime!=null">#{bean.expireTime},</if>
+            <if test="bean.shareTime!=null">#{bean.shareTime},</if>
+            <if test="bean.code!=null">#{bean.code},</if>
+            <if test="bean.showCount!=null">#{bean.showCount},</if>
+        </trim>
+    </insert>
+
+    <!-- Insert or Update (Matching Non-Null Fields) -->
+    <insert id="insertOrUpdate" parameterType="com.capstone.udrive.entity.po.FileShare">
+        INSERT INTO file_share
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="bean.shareId != null">share_id,</if>
+            <if test="bean.fileId != null">file_id,</if>
+            <if test="bean.userId != null">user_id,</if>
+            <if test="bean.validType != null">valid_type,</if>
+            <if test="bean.expireTime != null">expire_time,</if>
+            <if test="bean.shareTime != null">share_time,</if>
+            <if test="bean.code != null">code,</if>
+            <if test="bean.showCount != null">show_count,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="bean.shareId!=null">#{bean.shareId},</if>
+            <if test="bean.fileId!=null">#{bean.fileId},</if>
+            <if test="bean.userId!=null">#{bean.userId},</if>
+            <if test="bean.validType!=null">#{bean.validType},</if>
+            <if test="bean.expireTime!=null">#{bean.expireTime},</if>
+            <if test="bean.shareTime!=null">#{bean.shareTime},</if>
+            <if test="bean.code!=null">#{bean.code},</if>
+            <if test="bean.showCount!=null">#{bean.showCount},</if>
+        </trim>
+        on DUPLICATE key update
+        <trim prefix="" suffix="" suffixOverrides=",">
+            <if test="bean.shareId!=null">share_id = VALUES(share_id),</if>
+            <if test="bean.fileId!=null">file_id = VALUES(file_id),</if>
+            <if test="bean.userId!=null">user_id = VALUES(user_id),</if>
+            <if test="bean.validType!=null">valid_type = VALUES(valid_type),</if>
+            <if test="bean.expireTime!=null">expire_time = VALUES(expire_time),</if>
+            <if test="bean.shareTime!=null">share_time = VALUES(share_time),</if>
+            <if test="bean.code!=null">code = VALUES(code),</if>
+            <if test="bean.showCount!=null">show_count = VALUES(show_count),</if>
+        </trim>
+    </insert>
+
+    <!-- Add (Batch Insert) -->
+    <insert id="insertBatch" parameterType="com.capstone.udrive.entity.po.FileShare">
+        INSERT INTO file_share(
+        share_id,
+        file_id,
+        user_id,
+        valid_type,
+        expire_time,
+        share_time,
+        code,
+        show_count
+        ) values
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.shareId},
+            #{item.fileId},
+            #{item.userId},
+            #{item.validType},
+            #{item.expireTime},
+            #{item.shareTime},
+            #{item.code},
+            #{item.showCount}
+            )
+        </foreach>
+    </insert>
+
+    <!-- Batch Insert or Update -->
+    <insert id="insertOrUpdateBatch" parameterType="com.capstone.udrive.entity.po.FileShare">
+        INSERT INTO file_share(
+        share_id,
+        file_id,
+        user_id,
+        valid_type,
+        expire_time,
+        share_time,
+        code,
+        show_count
+        ) values
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.shareId},
+            #{item.fileId},
+            #{item.userId},
+            #{item.validType},
+            #{item.expireTime},
+            #{item.shareTime},
+            #{item.code},
+            #{item.showCount}
+            )
+        </foreach>
+        on DUPLICATE key update
+        share_id = VALUES(share_id),
+        file_id = VALUES(file_id),
+        user_id = VALUES(user_id),
+        valid_type = VALUES(valid_type),
+        expire_time = VALUES(expire_time),
+        share_time = VALUES(share_time),
+        code = VALUES(code),
+        show_count = VALUES(show_count)
+    </insert>
+
+    <!-- Update by Share ID -->
+    <update id="updateByShareId" parameterType="com.capstone.udrive.entity.po.FileShare">
+        UPDATE file_share
+        <set>
+            <if test="bean.fileId != null">file_id = #{bean.fileId},</if>
+            <if test="bean.userId != null">user_id = #{bean.userId},</if>
+            <if test="bean.validType != null">valid_type = #{bean.validType},</if>
+            <if test="bean.expireTime != null">expire_time = #{bean.expireTime},</if>
+            <if test="bean.shareTime != null">share_time = #{bean.shareTime},</if>
+            <if test="bean.code != null">code = #{bean.code},</if>
+            <if test="bean.showCount != null">show_count = #{bean.showCount},</if>
+        </set>
+        where share_id=#{shareId}
+    </update>
+
+    <!-- Delete by Share ID -->
+    <delete id="deleteByShareId">
+        DELETE FROM file_share
+        WHERE share_id = #{shareId}
+    </delete>
+
+    <!-- Select by Share ID -->
+    <select id="selectByShareId" resultMap="base_result_map">
+        SELECT
+        <include refid="base_column_list"/>
+        FROM file_share s WHERE share_id=#{shareId}
+    </select>
+
+    <delete id="deleteFileShareBatch">
+        DELETE FROM file_share WHERE user_id = #{userId}
+        AND share_id in
+        (
+        <foreach collection="shareIdArray" separator="," item="item">
+            #{item}
+        </foreach>
+        )
+    </delete>
+
+    <update id="updateShareShowCount">
+        UPDATE file_share
+        SET show_count = show_count + 1
+        WHERE share_id = #{shareId}
+    </update>
+</mapper>

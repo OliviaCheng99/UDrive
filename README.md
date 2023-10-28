@@ -1,2 +1,4 @@
-# Drive
-capstone project for UOU MSD 2023
+# capstone
+
+## Environment
+Require: Java 8, Mavin, MySQL, Redis, ffmpeg, npm
