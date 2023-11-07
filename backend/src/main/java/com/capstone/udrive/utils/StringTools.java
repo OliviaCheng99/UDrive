@@ -31,7 +31,7 @@ public class StringTools {
         String fileSuffix = "";
 
         if (path.getFileName().toString().contains(".")) {
-            fileSuffix = path.getFileName().toString().replaceFirst("^.*\\.", "");
+            fileSuffix = path.getFileName().toString().replaceFirst("^.*\\.", ".");
         }
 
         return fileSuffix;

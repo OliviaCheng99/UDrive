@@ -55,6 +55,7 @@ public class AccountController extends CommonController {
             session.setAttribute(Constants.CHECK_CODE_KEY_EMAIL, code);
         }
         vCode.write(response.getOutputStream());
+        log.debug("Code: {}", code);
     }
 
 

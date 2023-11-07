@@ -15,9 +15,6 @@ public class UserInfo implements Serializable {
     private String nickName;
 
     private String email;
-    private String qqAvatar;
-
-    private String qqOpenId;
 
     private String password;
 

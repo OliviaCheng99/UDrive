@@ -27,7 +27,7 @@ public class ShareController extends CommonController {
     @PostMapping("/loadShareList")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO<PaginationResultVO<FileShare>> loadShareList(@Validated HttpSession session,
-                                                                   @RequestParam("query") FileShareQuery query) {
+                                                                   FileShareQuery query) {
         query.setOrderBy("share_time desc");
         SessionWebUserDto userDto = getUserInfoFromSession(session);
         query.setUserId(userDto.getUserId());
@@ -41,7 +41,7 @@ public class ShareController extends CommonController {
     public ResponseVO<FileShare> shareFile(@Validated HttpSession session,
                                            @RequestParam("fileId") @VerifyParam(required = true) String fileId,
                                            @RequestParam("validType") @VerifyParam(required = true) Integer validType,
-                                           @RequestParam("code")  String code) {
+                                           String code) {
         SessionWebUserDto userDto = getUserInfoFromSession(session);
         FileShare share = new FileShare();
         share.setFileId(fileId);

@@ -19,11 +19,4 @@ public class AppConfig {
     private String adminEmails;
     @Value("${dev:false}")
     private Boolean dev;
-
-    public String getProjectFolder() {
-        if (!StringUtils.isEmpty(projectFolder) && !projectFolder.endsWith("/")) {
-            projectFolder = projectFolder + "/";
-        }
-        return projectFolder;
-    }
 }

@@ -43,6 +43,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -227,9 +229,9 @@ public class FileInfoServiceImpl implements FileInfoService {
                     return resultDto;
                 }
             }
-            String tempFolderName = appConfig.getProjectFolder() + Constants.FILE_FOLDER_TEMP;
+            Path tempFolderName = Paths.get(appConfig.getProjectFolder(), Constants.FILE_FOLDER_TEMP);
             String currentUserFolderName = webUserDto.getUserId() + fileId;
-            tempFileFolder = new File(tempFolderName + currentUserFolderName);
+            tempFileFolder = new File(Paths.get(String.valueOf(tempFolderName), currentUserFolderName).toString());
             if (!tempFileFolder.exists()) {
                 tempFileFolder.mkdirs();
             }
@@ -239,8 +241,8 @@ public class FileInfoServiceImpl implements FileInfoService {
                 throw new BusinessException(ResponseCodeEnum.CODE_604);
             }
 
-            File newFile = new File(tempFileFolder.getPath() + "/" + chunkIndex);
-            file.transferTo(newFile);
+            Path newFilePath = Paths.get(tempFileFolder.getPath(), String.valueOf(chunkIndex));
+            file.transferTo(newFilePath);
             redisComponent.saveFileTempSize(webUserDto.getUserId(), fileId, file.getSize());
             if (chunkIndex < chunks - 1) {
                 resultDto.setStatus(UploadStatusEnums.UPLOADING.getCode());

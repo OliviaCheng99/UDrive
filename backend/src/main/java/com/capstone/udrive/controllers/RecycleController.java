@@ -28,8 +28,8 @@ public class RecycleController extends CommonController {
     @PostMapping("/loadRecycleList")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO<PaginationResultVO<FileInfoVO>> loadRecycleList(@Validated HttpSession session,
-                                                                      @RequestParam("pageNo") Integer pageNo,
-                                                                      @RequestParam("pageSize") Integer pageSize) {
+                                                                      Integer pageNo,
+                                                                      Integer pageSize) {
         FileInfoQuery query = new FileInfoQuery();
         query.setPageSize(pageSize);
         query.setPageNo(pageNo);

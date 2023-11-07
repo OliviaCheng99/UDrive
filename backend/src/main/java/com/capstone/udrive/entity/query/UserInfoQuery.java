@@ -19,14 +19,6 @@ public class UserInfoQuery extends BaseParam {
 
     private String emailFuzzy;
 
-    private String qqAvatar;
-
-    private String qqAvatarFuzzy;
-
-    private String qqOpenId;
-
-    private String qqOpenIdFuzzy;
-
     private String password;
 
     private String passwordFuzzy;
