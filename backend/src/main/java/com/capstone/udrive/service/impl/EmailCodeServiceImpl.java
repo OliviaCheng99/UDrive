@@ -125,9 +125,9 @@ public class EmailCodeServiceImpl implements EmailCodeService {
             message.setSubject(sysSettingsDto.getRegisterEmailTitle());
             message.setText(String.format(sysSettingsDto.getRegisterEmailContent(), code));
             message.setSentDate(new Date());
-
+// TODO: still not able to use Gmail to send email
 //            mailSender.send(message);
-            log.warn(code);
+            log.warn("Email code: " + code);
         } catch (Exception e) {
             log.error("Send error", e);
             throw new BusinessException("Email send error");
@@ -139,7 +139,7 @@ public class EmailCodeServiceImpl implements EmailCodeService {
     public void sendEmailCode(String toEmail, Integer type) {
         if (!Constants.ZERO.equals(type)) {
             UserInfo userInfo = userInfoMapper.selectByEmail(toEmail);
-            if (null != userInfo) {
+            if (userInfo == null) {
                 throw new BusinessException("Email doesn't exist");
             }
         }
