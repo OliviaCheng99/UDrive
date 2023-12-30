@@ -114,7 +114,7 @@ public class FileInfoController extends CommonFileController {
     @PostMapping("/loadAllFolder")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO<List<FileInfoVO>> loadAllFolder(@Validated HttpSession session,
-                                                      @RequestParam("fileId") @VerifyParam(required = true) String filePid,
+                                                      @RequestParam("filePid") @VerifyParam(required = true) String filePid,
                                                       @RequestParam("currentFileIds") String currentFileIds) {
         FileInfoQuery query = new FileInfoQuery();
         query.setUserId(getUserInfoFromSession(session).getUserId());
@@ -132,7 +132,7 @@ public class FileInfoController extends CommonFileController {
     @PostMapping("/changeFileFolder")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO<List<FileInfoVO>> changeFileFolder(@Validated HttpSession session,
-                                                         @RequestParam("fileId") @VerifyParam(required = true) String fileIds,
+                                                         @RequestParam("fileIds") @VerifyParam(required = true) String fileIds,
                                                          @RequestParam("filePid") @VerifyParam(required = true) String filePid) {
         SessionWebUserDto webUserDto = getUserInfoFromSession(session);
         fileInfoService.changeFileFolder(fileIds, filePid, webUserDto.getUserId());

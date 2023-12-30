@@ -6,15 +6,46 @@
         <span class="name">UDrive</span>
       </div>
       <div class="right-panel">
+        <el-popover
+          :width="800"
+          trigger="click"
+          v-model:visible="showUploader"
+          :offset="20"
+          transition="none"
+          :hide-after="0"
+          :popper-style="{ padding: '0px' }"
+        >
+          <template #reference>
+            <span class="iconfont icon-transfer"></span>
+          </template>
+          <template #default>
+            <Uploader
+              ref="uploaderRef"
+              @uploadCallback="uploadCallbackHandler"
+            ></Uploader>
+          </template>
+        </el-popover>
         <el-dropdown>
           <div class="user-info">
             <div class="avatar">
+              <Avatar
+                :userId="userInfo.userId"
+                :avatar="userInfo.avatar"
+                :timestamp="timestamp"
+                :width="46"
+              ></Avatar>
             </div>
             <span class="nick-name">{{ userInfo.nickName }}</span>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item @click="logout"> log out </el-dropdown-item>
+              <el-dropdown-item @click="updateAvatar">
+                update Avatar
+              </el-dropdown-item>
+              <el-dropdown-item @click="updatePassword">
+                update Password
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -25,7 +56,7 @@
         <div class="menu-list">
           <template v-for="item in menus">
             <div
-              v-if="item.allShow || (!item.allShow && userInfo.admin)"
+              v-if="item.allShow || (!item.allShow && userInfo.isAdmin)"
               @click="jump(item)"
               :class="[
                 'menu-item',
@@ -88,15 +119,27 @@
         </router-view>
       </div>
     </div>
+    <!--修改头像-->
+    <UpdateAvatar
+      ref="updateAvatarRef"
+      @updateAvatar="reloadAvatar"
+    ></UpdateAvatar>
+    <!--修改密码-->
+    <UpdatePassword ref="updatePasswordRef"></UpdatePassword>
   </div>
 </template>
 
 <script setup>
+import UpdateAvatar from "./UpdateAvatar.vue";
+import UpdatePassword from "./UpdatePassword.vue";
+import Uploader from "@/views/main/Uploader.vue";
 import {
   ref,
+  reactive,
   getCurrentInstance,
   watch,
   nextTick,
+  computed,
 } from "vue";
 import { useRouter, useRoute } from "vue-router";
 const { proxy } = getCurrentInstance();
@@ -132,6 +175,101 @@ const timestamp = ref(0);
 //get user info
 const userInfo = ref(proxy.VueCookies.get("userInfo"));
 
+const menus = [
+  {
+    icon: "cloude",
+    name: "Home",
+    menuCode: "main",
+    path: "/main/all",
+    allShow: true,
+    children: [
+      {
+        icon: "all",
+        name: "All Files",
+        category: "all",
+        path: "/main/all",
+      },
+      {
+        icon: "video",
+        name: "Videos",
+        category: "video",
+        path: "/main/video",
+      },
+      {
+        icon: "music",
+        name: "Music",
+        category: "music",
+        path: "/main/music",
+      },
+      {
+        icon: "image",
+        name: "Images",
+        category: "image",
+        path: "/main/image",
+      },
+      {
+        icon: "doc",
+        name: "Documents",
+        category: "doc",
+        path: "/main/doc",
+      },
+      {
+        icon: "more",
+        name: "Others",
+        category: "others",
+        path: "/main/others",
+      },
+    ],
+  },
+  {
+    path: "/myshare",
+    icon: "share",
+    name: "Share",
+    menuCode: "share",
+    allShow: true,
+    children: [
+      {
+        name: "myshare",
+        path: "/myshare",
+      },
+    ],
+  },
+  {
+    path: "/recycle",
+    icon: "del",
+    name: "Recycle Bin",
+    menuCode: "recycle",
+    tips: "The Recycle Bin saves files deleted within 10 days",
+    allShow: true,
+    children: [
+      {
+        name: "deleted files",
+        path: "/recycle",
+      },
+    ],
+  },
+  {
+    path: "/settings/fileList",
+    icon: "settings",
+    name: "Settings",
+    menuCode: "settings",
+    allShow: false,
+    children: [
+      {
+        name: "manage files",
+        path: "/settings/fileList",
+      },
+      {
+        name: "manage users",
+        path: "/settings/userList",
+      },
+      {
+        path: "/settings/sysSetting",
+        name: "system settings",
+      },
+    ],
+  },
+];
 const currentMenu = ref({});
 const currentPath = ref();
 
@@ -160,6 +298,21 @@ watch(
   { immediate: true, deep: true }
 );
 
+//updateAvatar
+const updateAvatarRef = ref();
+const updateAvatar = () => {
+  updateAvatarRef.value.show(userInfo.value);
+};
+const reloadAvatar = () => {
+  userInfo.value = proxy.VueCookies.get("userInfo");
+  timestamp.value = new Date().getTime();
+};
+
+//updatePassword
+const updatePasswordRef = ref();
+const updatePassword = () => {
+  updatePasswordRef.value.show();
+};
 
 //log out
 const logout = () => {
@@ -187,7 +340,7 @@ const getUseSpace = async () => {
   }
   useSpaceInfo.value = result.data;
 };
-console.log(userInfo)
+console.log("HERE", userInfo)
 getUseSpace();
 </script>
 

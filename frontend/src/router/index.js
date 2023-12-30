@@ -11,8 +11,78 @@ const router = createRouter({
     },
     {
       path: "/",
-      component: () => import("@/views/Framework.vue")
-    }
+      component: () => import("@/views/Framework.vue"),
+      children: [
+        {
+          path: '/',
+          redirect: "/main/all"
+        },
+        {
+          path: '/main/:category',
+          name: 'Home',
+          meta: {
+            needLogin: true,
+            menuCode: "main"
+          },
+          component: () => import("@/views/main/Main.vue")
+        },
+        {
+          path: '/myshare',
+          name: 'myshare',
+          meta: {
+            needLogin: true,
+            menuCode: "share"
+          },
+          component: () => import("@/views/share/Share.vue")
+        },
+        {
+          path: '/recycle',
+          name: 'recycle bin',
+          meta: {
+            needLogin: true,
+            menuCode: "recycle"
+          },
+          component: () => import("@/views/recycle/Recycle.vue")
+        },
+        {
+          path: '/settings/sysSetting',
+          name: '系统设置',
+          meta: {
+            needLogin: true,
+            menuCode: "settings"
+          },
+          component: () => import("@/views/admin/SysSettings.vue")
+        },
+        {
+          path: '/settings/userList',
+          name: '用户管理',
+          meta: {
+            needLogin: true,
+            menuCode: "settings"
+          },
+          component: () => import("@/views/admin/UserList.vue")
+        },
+        {
+          path: '/settings/fileList',
+          name: 'user files',
+          meta: {
+            needLogin: true,
+            menuCode: "settings"
+          },
+          component: () => import("@/views/admin/FileList.vue")
+        },
+      ]
+    },
+    {
+      path: '/shareCheck/:shareId',
+      name: 'shareCheck',
+      component: () => import("@/views/webshare/ShareCheck.vue")
+    },
+    {
+      path: '/share/:shareId',
+      name: 'share',
+      component: () => import("@/views/webshare/Share.vue")
+    }, 
   ]
 })
 

@@ -158,7 +158,7 @@ public class WebShareController extends CommonFileController {
         super.getFile(response, fileId, shareSessionDto.getShareUserId());
     }
 
-    @GetMapping("/createDownloadUrl/{shareId}/{fileId}")
+    @PostMapping("/createDownloadUrl/{shareId}/{fileId}")
     @GlobalInterceptor(checkLogin = false, checkParams = true)
     public ResponseVO<String> createDownloadUrl(@Validated HttpSession session,
                                                 @PathVariable("shareId") @VerifyParam(required = true) String shareId,
